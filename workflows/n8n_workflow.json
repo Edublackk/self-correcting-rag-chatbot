@@ -1,0 +1,1034 @@
+{
+  "name": "n8n telegram RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        224
+      ],
+      "id": "6c207a00-ccc3-4c16-ba3b-38478da7dc13",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        448
+      ],
+      "id": "4cb8447a-dcf9-4f04-adc3-6159da61309f",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "c30cb0da-8c6a-408f-b1ec-05ac2fb5e7c3",
+      "name": "Chat Memory Manager"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this to search and answer user queries",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        256
+      ],
+      "id": "74d35bb2-ba95-46c0-a234-56a75f7b3f19",
+      "name": "RAG_Internal_Knowledge_Base",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Jc0AWFRiRPVRLKen",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        240
+      ],
+      "id": "d2321648-dd7a-4cd5-917e-1564e555f25d",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Set Session ID').item.json.sessionId }}",
+        "text": "={{ $json.draft_answer }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3584,
+        16
+      ],
+      "id": "deaa6e3f-34a5-4562-b5e0-e6836882938a",
+      "name": "Send a text message",
+      "webhookId": "99350007-b0e8-4c48-bfea-d524e433d3eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "xSO0Aho8o78OgoB5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}\nYou are a STRICT RAG-based assistant.  \nYou do NOT use your own knowledge.  \nYou do NOT invent answers.  \nYou only answer using information retrieved from the tool:\n\"RAG_Internal_Knowledge_Base\".\n\n====================================================\n### ABSOLUTE RULES\n- You MUST use the RAG tool for EVERY user question.\n- You MUST NOT answer from your own memory or general training.\n- If the tool returns no relevant context, say:\n  \"I could not find this information in the knowledge base.\"\n\n- Never guess.\n- Never hallucinate.\n- Never apologize for limitations beyond:\n  “This information does not appear in the knowledge base.”\n\n====================================================\n### HOW TO USE THE RAG TOOL\nAlways call the RAG tool using:\n\nRAG_Internal_Knowledge_Base({\n  \"q\": \"<the user's query or a refined version>\"\n})\n\nExamples:\nUser: \"Summarize the pdf.\"\n→ RAG_Internal_Knowledge_Base({ \"q\": \"summarize the PDF\" })\n\nUser: \"What does the onboarding document say?\"\n→ RAG_Internal_Knowledge_Base({ \"q\": \"onboarding document content\" })\n\n====================================================\n### AFTER TOOL CALL\nOnce you receive retrieved document chunks:\n- Read them carefully.\n- Synthesize them into a clear, structured answer.\n- Only use retrieved content.\n- If chunks do not contain the answer, say:\n  “The knowledge base does not contain this information.”\n\n====================================================\n### RESPONSE STYLE\n- Be concise.\n- Use bullets or short paragraphs.\n- Stay factual.\n- Stay grounded only in tool results.\n- Never use outside world knowledge.\n- Never answer without running the tool first.\n\n====================================================\n### IMPORTANT\nIf a user asks something not connected to the documents:\n- STILL call the RAG tool.\n- If the tool returns nothing:\n  “I could not find relevant information in the knowledge base.”\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1984,
+        0
+      ],
+      "id": "fc7b6d94-2efd-4838-a595-123aca798e06",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        0
+      ],
+      "id": "14b93131-ff1c-4d2f-abe6-aa8be4df66d1",
+      "name": "Telegram Trigger",
+      "webhookId": "31b88535-c02e-40a2-be64-6e8554541853",
+      "credentials": {
+        "telegramApi": {
+          "id": "xSO0Aho8o78OgoB5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "485243bf-1436-456d-88ca-04f96aa4483f",
+              "leftValue": "={{ $json.content.parts[0].text }}",
+              "rightValue": "bad",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2880,
+        0
+      ],
+      "id": "bc864773-fd98-4c83-b775-37f02bcbfa2f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78ae84e9-6379-4967-9776-20181428d78f",
+              "name": "query",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1696,
+        0
+      ],
+      "id": "292b8297-24f0-4a30-bd71-98e574ee177e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae8cbfc6-e253-4cab-847e-21264f223384",
+              "name": "draft_answer",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2304,
+        0
+      ],
+      "id": "d01c743a-b545-4f43-98f9-2eac263f1b6a",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Here is a draft answer that was rated as bad:\n{{ $json.draft_answer }}\n\nImprove it to be clearer, more helpful, and more accurate.\nReturn ONLY the improved answer. No explanations.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        3056,
+        -224
+      ],
+      "id": "b2f5ccd3-e775-4d1d-bcbb-e21f328f596f",
+      "name": "Improver Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Draft answer:\n{{$json.draft_answer}}\n\nYou are an answer evaluator.\nReturn only one word:\ngood\nbad\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2496,
+        0
+      ],
+      "id": "373bfee3-e69f-4ead-baf3-c998f8bdac1f",
+      "name": "Evaluator",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "71248aea-1e92-46cc-97ec-9f41cb5c0aed",
+              "name": "draft_answer",
+              "value": "={{ $('Edit Fields3').item.json.draft_answer }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3200,
+        16
+      ],
+      "id": "8e923185-22d7-4c90-b57c-f8fd59432009",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f4b7463-9f6a-4f84-b4b7-9a4074ce43ab",
+              "name": "final_answer",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3376,
+        -224
+      ],
+      "id": "d7de5394-81d6-4bb2-afe8-e84f21b67681",
+      "name": "Set Final Answer (Improved)"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        976
+      ],
+      "id": "c0386789-0c08-4dc0-b558-0591ad3b96e2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "15P-KRMVzTSos7Bh7HVTKmdVGAZ-nXgDA",
+            "mode": "id"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        160,
+        976
+      ],
+      "id": "680bd2ad-c153-4d5f-9503-fc4b4be7d51c",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "owN3wXTK5JcpMrEY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        368,
+        976
+      ],
+      "id": "406f2c85-2915-4da6-a0ab-2e90cafe1c5f",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "owN3wXTK5JcpMrEY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        976
+      ],
+      "id": "e515ea12-0371-4462-85a0-ef10a9738a0c",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Jc0AWFRiRPVRLKen",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        368,
+        1392
+      ],
+      "id": "ef0c5922-95ac-41a1-8c77-53e02238a8cf",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        1184
+      ],
+      "id": "b22af7b3-596e-44d2-9c5e-af02e84479b0",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        576,
+        1168
+      ],
+      "id": "02c2612c-6432-4f05-b8b2-bdb529889a3c",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bde8203d-6fac-4172-beb0-416df51565b3",
+              "name": "sessionId",
+              "value": "={{$json.message.chat.id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "0c68c57f-994b-4097-a29d-119a73b0c12e",
+      "name": "Set Session ID"
+    },
+    {
+      "parameters": {
+        "content": "# Data Ingestion pipeline",
+        "height": 768,
+        "width": 1136,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        880
+      ],
+      "typeVersion": 1,
+      "id": "72173cc7-f056-47a7-b073-f5a57227ca23",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        944,
+        -320
+      ],
+      "id": "e9339a6d-41b0-494a-a905-9252b5129aaa",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1840,
+        -320
+      ],
+      "id": "06a7e1d7-3565-4ddb-9bdb-cd7f84d31714",
+      "name": "Send Summarization Message",
+      "webhookId": "151ad884-6c26-4059-b969-2ad15bd584a6",
+      "credentials": {
+        "telegramApi": {
+          "id": "xSO0Aho8o78OgoB5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You will receive raw HTML from a webpage.\n\nTASK:\nExtract ONLY human-readable article text.\nDo NOT include:\n- HTML tags\n- JavaScript\n- CSS\n- Boilerplate\n- Menus, headers, footers\n- Code examples\n- Explanations\n- Meta descriptions\n- Ads\n- Python code or suggestions\n\nVery important:\nReturn ONLY the extracted plain text from the article.\nNo introductions, no explanations, no notes.\n\nHTML:\n{{ $json.data }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        -320
+      ],
+      "id": "396e076f-eeb2-45e5-9d16-d04475bc6d98",
+      "name": "Extract Human Readable Text",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 3,
+        "output": "={{\n  $json.message.text.startsWith('/help') ? 2 :\n  $json.message.text.match(/https?:\\/\\/\\S+/) ? 0 :\n  $json.message.text.startsWith('/summarize') ? 0 :\n  $json.message.text.startsWith('/analyze') ? 0 :\n  $json.message.text.startsWith('/explain') ? 0 :\n  $json.message.text.startsWith('/insights') ? 0 :\n  1\n}}"
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "e3766468-7c41-4045-8c62-09cf16adb408",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e04be32-d683-4297-9251-dc58212f5cba",
+              "name": "url",
+              "value": "={{ $json.message.text.match(/https?:\\/\\/\\S+/)?.[0] || \"\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        -256
+      ],
+      "id": "525098da-f46c-4b60-95e0-321737ad0c8f",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "🤖 Available Commands\n\n/help - for all commands\n\n/summarize <url> -> Summarize the webpage at url\n\n/analyze <url> -> Analyze the webpage at url\n\n/explain <url> -> Explain the webpage at url\n\n/insights <url> -> Insights of the webpage at url\n\n---\n\n🔗 Send any URL\nThe bot will automatically:\n\n• Fetch the webpage  \n• Extract the article text  \n• Summarize it  \n• Send the summary back  \n\n---\n\n📄 Ask anything about uploaded documents\nThe bot uses RAG + Gemini to answer strictly from your knowledge base.\n\n---\n\n📂 Auto-Ingestion\nThe bot ingests PDFs from Google Drive every 2 seconds and stores them in Supabase Vector DB.\n\n---\n\n🔁 Self-Correcting Answers\nEvery response is:  \n1. Evaluated  \n2. Improved  \n3. Re-sent with higher accuracy  \n\n---\n\n🚀 More features coming soon...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        112
+      ],
+      "id": "e58d095c-0dac-4f59-9a8a-6d75d228c0ee",
+      "name": "Send a text message1",
+      "webhookId": "6abb4b05-baf3-4840-886b-908bfdd04457",
+      "credentials": {
+        "telegramApi": {
+          "id": "xSO0Aho8o78OgoB5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Firstly check if {{ $('Switch').item.json.message.text }} contains one of the following /commands:\n/analyze, /summarize, /explain or /insights.\n\nalways mention the command only at the top of the message\n\nYou are an AI assistant that ONLY responds to the following slash commands. Do not engage in general conversation or answer questions outside of these commands.\n\n## Available Commands:\n\n**/summarize**\n- Fetch and read the content from the provided URL\n- Provide a concise summary of the main points (3-5 key takeaways)\n- Keep the summary brief and focused on essential information\n- Use bullet points for clarity\n\n**/analyze**\n- Fetch and read the content from the provided URL\n- Perform a detailed analysis of the content\n- Examine structure, arguments, data, methodology, or key themes\n- Identify strengths, weaknesses, biases, or patterns\n- Provide critical insights and evaluation\n\n**/explain**\n- Fetch and read the content from the provided URL\n- Break down complex concepts into simple, easy-to-understand language\n- Use analogies and examples where appropriate\n- Address technical terms and jargon in an educational manner\n\n**/insights**\n- Fetch and read the content from the provided URL\n- Extract actionable insights and implications\n- Identify trends, opportunities, or key takeaways\n- Focus on \"so what?\" - why this matters and what can be learned\n- Provide forward-looking perspectives\n\n## Critical Rules:\n- ONLY respond when one of the four commands above is used\n- If no valid command is detected, respond with: \"Please use one of the available commands: /summarize, /analyze, /explain, or /insights\"\n- Do not answer general questions or engage in conversation\n- Execute the command immediately without asking for confirmation\n{{ $json.content.parts[0].text }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        -320
+      ],
+      "id": "ac99352f-d016-4139-9c23-bab4c3127479",
+      "name": "Command Performer",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dMSE8bAhE8Mnyjpf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Main Pipeline",
+        "height": 1056,
+        "width": 4096,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -416
+      ],
+      "typeVersion": 1,
+      "id": "7042f327-8c9d-433c-be60-6ac8d92b0220",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "RAG_Internal_Knowledge_Base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory Manager": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG_Internal_Knowledge_Base": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Chat Memory Manager",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Improver Model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Evaluator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluator": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Improver Model": {
+      "main": [
+        [
+          {
+            "node": "Set Final Answer (Improved)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Final Answer (Improved)": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Session ID": {
+      "main": [
+        [
+          {
+            "node": "Chat Memory Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract Human Readable Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Human Readable Text": {
+      "main": [
+        [
+          {
+            "node": "Command Performer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Session ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Command Performer": {
+      "main": [
+        [
+          {
+            "node": "Send Summarization Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0c812053-ce54-4395-b70b-b38fe73295ba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1239b18cb3e7967a5e6c599afafccf3a49b5acffe3e0a1731602bb49ddae623a"
+  },
+  "id": "IJV5OKbBk8x0lBwi",
+  "tags": []
+}
