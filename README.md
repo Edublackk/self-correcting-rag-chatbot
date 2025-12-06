@@ -69,7 +69,7 @@ cd self-correcting-rag-chatbot
 
 1. Open your n8n instance
 2. Go to Workflows → Import from File
-3. Select `n8n-telegram-rag.json`
+3. Select `n8n_workflow.json`
 4. Configure credentials for each node:
    - Google Gemini API
    - Supabase (URL + anon key)
